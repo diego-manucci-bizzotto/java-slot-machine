@@ -1,55 +1,130 @@
+import {connected, betRequest} from "./socket.js";
 
-function getRandomSymbol() {
-    const symbols = [
-        '&#x1F347;',
-        '&#x1F349;',
-        '&#x1F34B;',
-        '&#x1F34C;',
-        '&#x1F352;',
-        '&#x1F34E;',
-        '&#x1F34A;',
-        '&#x1F48E;'
-    ];
-    return symbols[Math.floor(Math.random() * symbols.length)];
-}
+const symbolCount = 8;
+const symbolSize = 100;
+const symbolIndexes = [0, 0, 0];
+const spinCount = 8;
 
-function duplicateSymbols(reel, repeatCount) {
-    const symbolsContainer = reel.querySelector('.reel-symbols');
-    const symbolsHTML = symbolsContainer.innerHTML.repeat(repeatCount);
-    symbolsContainer.innerHTML += symbolsHTML;
-}
+const leverCooldown = 6000;
 
-function resetReel(reel) {
-    const symbolsContainer = reel.querySelector('.reel-symbols');
-    symbolsContainer.innerHTML = '';
-    for (let i = 0; i < 8; i++) {
-        symbolsContainer.innerHTML += `<div class="symbol">${getRandomSymbol()}</div>`;
-    }
-}
+const lever = document.querySelectorAll('.lever')[0];
+lever.addEventListener('click', checkSpin);
 
-function spinReel(reel) {
-    const repeatCount = 3;
+function spinReel(reel, reelIndex, targetSymbolIndex) {
 
-    resetReel(reel);
-    duplicateSymbols(reel, repeatCount);
+    // Reel center symbols are at index 1, so we need to adjust the target index
+    // to make sure the target symbol is in the center of the reel
+    // e.g. if we want to show the first symbol in the center, targetSymbolIndex = 0, so we need to adjust it to -1
+    targetSymbolIndex -= 1;
 
-    reel.querySelectorAll('.reel-symbols').forEach(reelSymbols => reelSymbols.classList.remove('spin'));
-    void reel.offsetWidth;
-    reel.querySelectorAll('.reel-symbols').forEach(reelSymbols => reelSymbols.classList.add('spin'));
+    const spinAmount = (spinCount) * symbolCount * symbolSize + ((targetSymbolIndex - symbolIndexes[reelIndex]) * symbolSize);
+    const backgroundPositionY = parseFloat(getComputedStyle(reel).backgroundPositionY);
+
+    const animTime = 5000 + (Math.round(Math.random() * 500) - 250);
+
+    reel.style.transition = `background-position-y ${animTime}ms ease-in-out`;
+
+    const bounceOffset = Math.round(Math.random() * 20);
+
+    reel.style.backgroundPositionY = `${backgroundPositionY - spinAmount - bounceOffset}px`;
 
     setTimeout(() => {
-        reel.querySelectorAll('.reel-symbol').forEach(reelSymbols => reelSymbols.classList.remove('spin'));
-        reel.querySelectorAll('.reel-symbol').forEach(reelSymbols => {
+        reel.style.transition = 'background-position-y 100ms ease-in-out';
+        reel.style.backgroundPositionY = `${backgroundPositionY - spinAmount}px`;
+    }, animTime);
 
-        });
-    }, 3000);
+    symbolIndexes[reelIndex] = targetSymbolIndex;
 }
 
-function spinAnimation() {
-    const reels = document.querySelectorAll('.reel');
-    reels.forEach(reel => {
-        spinReel(reel);
-    });
+function pullLever() {
+    const leverHandle = document.querySelectorAll('.lever > .lever-handle')[0];
+    leverHandle.style.transition = 'transform 400ms ease-in-out';
+    leverHandle.style.transform = 'translate(0, -50%) rotate(45deg)';
+    setTimeout(() => {
+        leverHandle.style.transition = 'transform 400ms ease-in-out';
+        leverHandle.style.transform = 'translate(0, -50%) rotate(-45deg)';
+    }, 400);
+
+    lever.style.cursor = 'default';
+    lever.removeEventListener('click', checkSpin);
+
+    setTimeout(() => {
+            lever.addEventListener('click', checkSpin);
+            lever.style.cursor = 'pointer';
+    }, leverCooldown);
 }
 
+function spinReels(symbolIndexes = [0, 0, 0], balance) {
+    pullLever();
+    const reels = document.getElementsByClassName('reel');
+    [...reels].forEach((reel, index) => {
+        setTimeout(() => {
+            spinReel(reel, index, symbolIndexes[index]);
+        }, index * 250);
+    })
 
+    setTimeout(() => {
+        updateBalance(balance);
+    }, leverCooldown);
+}
+
+let betValue = 1;
+let balanceValue = 100;
+
+function checkSpin(){
+    if(!connected) {
+        alert("Servidor desconectado!");
+        return;
+    }
+
+    if(balanceValue < betValue) {
+        alert("Saldo insuficiente!");
+        return;
+    }
+
+    betRequest(betValue);
+}
+
+function upBet() {
+    if(betValue < 10) {
+        betValue += 1;
+    } else if (betValue < 50) {
+        betValue += 5;
+    } else if (betValue < 100) {
+        betValue += 10;
+    }
+
+    document.querySelector('.bet-value').innerText = "R$ " + betValue.toFixed(2);
+}
+
+function downBet() {
+    if(betValue > 10) {
+        betValue -= 10;
+    } else if (betValue > 5) {
+        betValue -= 5;
+    } else if (betValue > 1) {
+        betValue -= 1;
+    }
+
+    document.querySelector('.bet-value').innerText = "R$ " + betValue.toFixed(2);
+}
+
+function updateBalance(balance) {
+    balanceValue = balance;
+    console.log(balanceValue);
+    document.querySelector('.credit-value').innerText = "R$ " + parseFloat(balanceValue).toFixed(2);
+}
+
+const upBetButton = document.querySelector('.bet-up-button');
+upBetButton.addEventListener('click', upBet);
+
+const downBetButton = document.querySelector('.bet-down-button');
+downBetButton.addEventListener('click', downBet);
+
+const creditText = document.querySelector('.credit-value');
+creditText.innerText = "R$ " + balanceValue.toFixed(2);
+
+const betText = document.querySelector('.bet-value');
+betText.innerText = "R$ " + betValue.toFixed(2);
+
+export {spinReels}

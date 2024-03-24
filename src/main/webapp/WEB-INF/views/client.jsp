@@ -9,82 +9,49 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rum+Raisin&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 
     <title>Java Slot Machine</title>
 </head>
 <body>
     <div class="container">
-        <div class="slots">
-            <div class="reels">
-                <div class="reel">
-                    <div class="reel-left-indicator"></div>
-                    <div class="reel-symbols">
-                        <div class="symbol">&#x1F347;</div>
-                        <div class="symbol">&#x1F349;</div>
-                        <div class="symbol">&#x1F34B;</div>
-                        <div class="symbol">&#x1F34C;</div>
-                        <div class="symbol">&#x1F352;</div>
-                        <div class="symbol">&#x1F34E;</div>
-                        <div class="symbol">&#x1F34A;</div>
-                        <div class="symbol">&#x1F48E;</div>
+        <div class="slot-machine">
+            <div class="slots">
+                <div class="reels">
+                    <div class="reel">
+                        <div class="reel-left-indicator"></div>
                     </div>
-                </div>
-                <div class="reel">
-                    <div class="reel-symbols">
-                        <div class="symbol">&#x1F347;</div>
-                        <div class="symbol">&#x1F349;</div>
-                        <div class="symbol">&#x1F34B;</div>
-                        <div class="symbol">&#x1F34C;</div>
-                        <div class="symbol">&#x1F352;</div>
-                        <div class="symbol">&#x1F34E;</div>
-                        <div class="symbol">&#x1F34A;</div>
-                        <div class="symbol">&#x1F48E;</div>
-                    </div>
-                </div>
-                <div class="reel">
-                    <div class="reel-right-indicator"></div>
-                    <div class="reel-symbols">
-                        <div class="symbol">&#x1F347;</div>
-                        <div class="symbol">&#x1F349;</div>
-                        <div class="symbol">&#x1F34B;</div>
-                        <div class="symbol">&#x1F34C;</div>
-                        <div class="symbol">&#x1F352;</div>
-                        <div class="symbol">&#x1F34E;</div>
-                        <div class="symbol">&#x1F34A;</div>
-                        <div class="symbol">&#x1F48E;</div>
+                    <div class="reel"></div>
+                    <div class="reel">
+                        <div class="reel-right-indicator"></div>
                     </div>
                 </div>
             </div>
-            <div class="actions">
-                <button class="spin-button" onclick="spin()">
-                    SPIN
-                </button>
-                <div class="bets">
-                    <div class="bet">
-                        <div class="slot-machine-bet-value">
-                            1
-                        </div>
-                        <button class="slot-machine-bet-button"></button>
-                    </div>
-                    <div class="bet">
-                        <div class="slot-machine-bet-value">
-                            5
-                        </div>
-                        <button class="slot-machine-bet-button"></button>
-                    </div>
-                    <div class="bet">
-                        <div class="slot-machine-bet-value">
-                            10
-                        </div>
-                        <button class="slot-machine-bet-button"></button>
-                    </div>
+            <div class="lever">
+                <div class="lever-handle"></div>
+                <div class="lever-base"></div>
+            </div>
+        </div>
+        <div class="credits">
+            <div class="credit">
+                <span class="credit-label">SALDO:</span>
+                <span class="credit-value">R$ 100</span>
+            </div>
+            <div class="bet">
+                <div class="bet-data">
+                    <span class="bet-label">APOSTA:</span>
+                    <span class="bet-value">R$ 1</span>
+                </div>
+                <div class="bet-buttons">
+                    <div class="bet-up-button"></div>
+                    <div class="bet-down-button"></div>
                 </div>
             </div>
         </div>
     </div>
-
-    <script src="${pageContext.request.contextPath}/js/script.js"></script>
-    <script src="${pageContext.request.contextPath}/js/socket.js"></script>
+    <script src="${pageContext.request.contextPath}/js/script.js" type="module"></script>
+    <script src="${pageContext.request.contextPath}/js/socket.js" type="module"></script>
 </body>
 </html>

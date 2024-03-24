@@ -1,50 +1,86 @@
 package br.dbizzotto.sockets;
 
-import br.dbizzotto.enums.Symbol;
+import jakarta.websocket.OnClose;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 @ServerEndpoint("/server")
 public class ServerSocket {
 
+    private Map<String, Long> players = new HashMap<>();
+    private Long balance = 100000L;
+
     @OnOpen
     public void onOpen(Session session) {
-        System.out.println("WebSocket opened: " + session.getId());
+        players.put(session.getId(), 100L);
+        System.out.println("New connection: " + session.getId());
+    }
+
+    @OnClose
+    public void onClose(Session session) {
+        players.remove(session.getId());
+        System.out.println("Connection closed: " + session.getId());
     }
 
     @OnMessage
     public void onMessage(String message, Session session) {
-        System.out.println("Message received: " + message);
+        String command = message.split(" ")[0];
+
         try {
-            Symbol symbol;
-
-            Double random = Math.random() * 100;
-
-            if (random <= 51){
-                symbol = Symbol.NONE;
-            } else if (random <= 66){
-                symbol = Symbol.PHP;
-            } else if (random <= 74){
-                symbol = Symbol.C;
-            } else if (random <= 81){
-                symbol = Symbol.CPLUSPLUS;
-            } else if (random <= 87){
-                symbol = Symbol.CSHARP;
-            } else if (random <= 92){
-                symbol = Symbol.JAVASCRIPT;
-            } else if (random <= 96){
-                symbol = Symbol.TYPESCRIPT;
-            } else if (random <= 99){
-                symbol = Symbol.PYTHON;
-            } else {
-                symbol = Symbol.JAVA;
+            if (command.equals("bet")) {
+                processBet(Long.valueOf(message.split(" ")[1]), session);
             }
-
-            session.getBasicRemote().sendText(symbol.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    private void processBet(Long betAmount, Session session) throws IOException {
+        if (players.get(session.getId()) < betAmount) {
+            session.getBasicRemote().sendText("Usuário sem saldo suficiente para apostar");
+            return;
+        }
+
+        players.put(session.getId(), players.get(session.getId()) - betAmount);
+
+        int firstSymbol = getRandomSymbol();
+        int secondSymbol = getRandomSymbol();
+        int thirdSymbol = getRandomSymbol();
+
+        if(firstSymbol == secondSymbol && secondSymbol == thirdSymbol) {
+            players.put(session.getId(), players.get(session.getId()) + betAmount * 5);
+        } else if(firstSymbol == secondSymbol || secondSymbol == thirdSymbol || firstSymbol == thirdSymbol) {
+            players.put(session.getId(), players.get(session.getId()) + betAmount * 2);
+        }
+
+        session.getBasicRemote().sendText("bet " + "[" + firstSymbol + "," + secondSymbol + "," + thirdSymbol + "] " + players.get(session.getId()));
+    }
+
+    private int getRandomSymbol() {
+        double rand = Math.random();
+        if (rand < 0.15) {
+            return 0;
+        } else if (rand < 0.30) {
+            return 1;
+        } else if (rand < 0.45) {
+            return 2;
+        } else if (rand < 0.60) {
+            return 3;
+        } else if (rand < 0.75) {
+            return 4;
+        } else if (rand < 0.85) {
+            return 5;
+        } else if (rand < 0.92) {
+            return 6;
+        } else {
+            return 7;
+        }
+    }
+
 }

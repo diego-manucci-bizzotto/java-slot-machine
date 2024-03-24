@@ -1,14 +1,24 @@
+import {spinReels} from "./script.js";
+
 const webSocket = new WebSocket("ws://localhost:8080/java_slot_machine_war_exploded/server");
 
+let connected = false;
+
 webSocket.onopen = function(event) {
-    console.log("WebSocket opened");
-    webSocket.send("Hello, WebSocket!");
+    connected = true;
 };
 
 webSocket.onmessage = function(event) {
-    console.log("Message received: " + event.data);
+    const symbolIndexes = event.data.split(" ")[1].replace("[", "").replace("]", "").split(",");
+    const balance = event.data.split(" ")[2];
+    spinReels(symbolIndexes, balance);
 };
 
-const spin = () => {
-    webSocket.send("spin");
+function betRequest (betValue) {
+    webSocket.send("bet " + betValue);
 }
+
+export {
+    connected,
+    betRequest,
+};
