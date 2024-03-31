@@ -38,12 +38,12 @@ function spinReel(reel, reelIndex, targetSymbolIndex) {
 
 function pullLever() {
     const leverHandle = document.querySelectorAll('.lever > .lever-handle')[0];
-    leverHandle.style.transition = 'transform 400ms ease-in-out';
-    leverHandle.style.transform = 'translate(0, -50%) rotate(45deg)';
+    leverHandle.style.transition = 'transform 650ms ease-in-out';
+    leverHandle.style.transform = 'translate(-50%, 585%)';
     setTimeout(() => {
-        leverHandle.style.transition = 'transform 400ms ease-in-out';
-        leverHandle.style.transform = 'translate(0, -50%) rotate(-45deg)';
-    }, 400);
+        leverHandle.style.transition = 'transform 650ms ease-in-out';
+        leverHandle.style.transform = 'translate(-50%, -25%)';
+    }, 650);
 
     lever.style.cursor = 'default';
     lever.removeEventListener('click', checkSpin);

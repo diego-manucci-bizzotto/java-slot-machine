@@ -16,8 +16,8 @@
     <title>Java Slot Machine</title>
 </head>
 <body>
-    <div class="container">
-        <div class="slot-machine">
+    <div class="slot-machine">
+        <div class="slot-machine-row">
             <div class="slots">
                 <div class="reels">
                     <div class="reel">
@@ -31,10 +31,9 @@
             </div>
             <div class="lever">
                 <div class="lever-handle"></div>
-                <div class="lever-base"></div>
             </div>
         </div>
-        <div class="credits">
+        <div class="slot-machine-row">
             <div class="credit">
                 <span class="credit-label">SALDO:</span>
                 <span class="credit-value">R$ 100</span>
@@ -48,6 +47,10 @@
                     <div class="bet-up-button"></div>
                     <div class="bet-down-button"></div>
                 </div>
+            </div>
+            <div class="payout">
+                <p>X X O  = 2X</p>
+                <p>X X X = 5X</p>
             </div>
         </div>
     </div>

@@ -55,32 +55,21 @@ public class ServerSocket {
 
         if(firstSymbol == secondSymbol && secondSymbol == thirdSymbol) {
             players.put(session.getId(), players.get(session.getId()) + betAmount * 5);
+            balance -= betAmount * 5;
         } else if(firstSymbol == secondSymbol || secondSymbol == thirdSymbol || firstSymbol == thirdSymbol) {
             players.put(session.getId(), players.get(session.getId()) + betAmount * 2);
+            balance -= betAmount * 2;
+        } else {
+            balance += betAmount;
         }
+
+        System.out.println("Current balance: " + balance);
 
         session.getBasicRemote().sendText("bet " + "[" + firstSymbol + "," + secondSymbol + "," + thirdSymbol + "] " + players.get(session.getId()));
     }
 
     private int getRandomSymbol() {
-        double rand = Math.random();
-        if (rand < 0.15) {
-            return 0;
-        } else if (rand < 0.30) {
-            return 1;
-        } else if (rand < 0.45) {
-            return 2;
-        } else if (rand < 0.60) {
-            return 3;
-        } else if (rand < 0.75) {
-            return 4;
-        } else if (rand < 0.85) {
-            return 5;
-        } else if (rand < 0.92) {
-            return 6;
-        } else {
-            return 7;
-        }
+        return (int) (Math.random() * 7);
     }
 
 }
